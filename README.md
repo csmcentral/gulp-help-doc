@@ -1,5 +1,8 @@
-# gulp-help-doc
+# @slcpub/gulp-help-doc
+<!-- 
 [![Build Status](https://travis-ci.org/Mikhus/gulp-help-doc.svg?branch=master)](https://travis-ci.org/Mikhus/gulp-help-doc)  [![NPM License](https://img.shields.io/npm/l/gulp-help-doc.svg)](https://raw.githubusercontent.com/Mikhus/gulp-help-doc/master/LICENSE)
+-->
+> Fork of [gulp-help-doc](https://github.com/Mikhus/gulp-help-doc) by [Mykhailo Stadnyk](https://github.com/Mikhus)
 
 Self-documented gulp tasks with pretty printable usage information in command-line.
 
@@ -16,7 +19,7 @@ Self-documented gulp tasks with pretty printable usage information in command-li
 
 ## Install
 
-    $ npm install gulp-help-doc
+    $ npm install @slcpub/gulp-help-doc
 
 ## Using
 
@@ -177,7 +180,7 @@ the group. Then inside a group it will arrange task elements by their specified
 ## How it works?
 
 This plugin enables you to use jsDoc-like tags to document your tasks
-and make those task documentation availabe from command-line as usage
+and make those task documentation available from command-line as usage
 information.
 
   * `@task {task_name}`
@@ -197,6 +200,33 @@ of the list, sorted alphabetically. If groups are enabled (by specifying
 `group` tag on the tasks) `@order` tags assigned to the tasks also influence on 
 groups arrangement. Task groups will be ordered by a minimal `@order` values 
 found inside each group.
+
+### Tasks from `node_modules`
+
+> since version 1.1.2
+
+By default, only the running `gulpfile.js` and any local script files loaded 
+with `require()` are searched for task documentation. Modules loaded from the
+`node_modules` directory are ignored. However, any module names added to the
+`package.json#helpDocDependencies` list will be searched, as well.
+
+```json
+{
+  "name": "@mylib/my-package",
+  "version": "1.1.0",
+  ...
+  "devDependencies": {
+    "@mylib/common-tasks": "^1.3.0",
+    ...
+  },
+  "helpDocDependencies": [
+    "@mylib/common-tasks"
+  ],
+  ...
+}
+```
+  Any script files in `node_modules/<module_name>` are searched for task
+  documentation in addition to the default sources.
 
 ## Restrictions
 
@@ -230,7 +260,7 @@ Options are:
   * **emptyLineBetweenTasks** - if set to `true` (default), prints an empty
     line between tasks help descriptions
   * **gulpfile** - full path to gulpfile containing jsDoc tags.  By default 
-    ignores any files in node_modules.  
+    ignores any files in node_modules.
 
 Example of custom configuration: 
 
