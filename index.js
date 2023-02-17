@@ -41,7 +41,8 @@ var reflection = {};
  *     gulpfile: string,
  *     displayDependencies: boolean,
  *     emptyLineBetweenTasks: boolean,
- *     defaultGroupName: string
+ *     defaultGroupName: string,
+ *     includeModules: array
  * }} ConfigOptions
  */
 
@@ -61,7 +62,8 @@ var OPTIONS = {
     gulpfile: undefined,
     displayDependencies: true,
     emptyLineBetweenTasks: true,
-    defaultGroupName: 'Common tasks'
+    defaultGroupName: 'Common tasks',
+    includeModules: []
 };
 
 function rdeps(nodes) {
@@ -112,6 +114,10 @@ function gulpTasks(gulp) {
  * @access private
  */
 function build(gulp) {
+    // Load list of modules to include in doc source.
+    var pkgJson = JSON.parse(fs.readFileSync("./package.json").toString('utf-8'));
+    var modules = pkgJson.helpDocDependencies||[];
+
     // make sure we don't lose anything from required files
     // @see https://github.com/Mikhus/gulp-help-doc/issues/2
     // currently this is not supported for typescript
@@ -121,7 +127,13 @@ function build(gulp) {
         OPTIONS.gulpfile ?
             fs.readFileSync(OPTIONS.gulpfile).toString() :
         Object.keys(require.cache || {'gulpfile.js': ''}).map(function(file) {
-            if (!/node_modules|\.json$/.test(file)) {
+
+            // Normalize file path (Windows) and check 
+            // if file is a module to be included.
+            var normFile = file.replace(/\\/g, "/");        
+            var isModule = modules.some(m => normFile.includes(`node_modules/${m}`));
+            
+            if (isModule || !/node_modules|\.json$/.test(file)) {
                 return fs.readFileSync(file).toString() + '\n';
             }
         }).join('');
